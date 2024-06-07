@@ -1,0 +1,84 @@
+export EDITOR=vim
+
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=10000000
+SAVEHIST=10000000
+setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
+setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
+setopt SHARE_HISTORY             # Share history between all sessions.
+setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first when trimming history.
+setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate.
+setopt HIST_IGNORE_SPACE         # Don't record an entry starting with a space.
+setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
+setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
+
+setopt auto_cd
+setopt auto_pushd
+setopt pushd_ignore_dups
+setopt pushdminus
+
+
+alias -g ...='../..'
+alias -g ....='../../..'
+alias -g .....='../../../..'
+alias -g ......='../../../../..'
+
+alias -- -='cd -'
+alias 1='cd -1'
+alias 2='cd -2'
+alias 3='cd -3'
+alias 4='cd -4'
+alias 5='cd -5'
+alias 6='cd -6'
+alias 7='cd -7'
+alias 8='cd -8'
+alias 9='cd -9'
+
+{{ if eq .chezmoi.os "darwin" }}
+export ZPLUG_HOME=$HOMEBREW_PREFIX/opt/zplug
+{{ end }}
+{{ if eq .chezmoi.os "linux" }}
+export ZPLUG_HOME=/usr/share/zplug
+{{ end }}
+source $ZPLUG_HOME/init.zsh
+
+# uses for zpm-zsh/ls
+autoload -U +X compinit && compinit
+autoload -U +X bashcompinit && bashcompinit
+fpath=("$HOME/.zfunctions" $fpath)
+
+zplug "zpm-zsh/ls"
+zplug "plugins/git", from:oh-my-zsh
+zplug "plugins/sudo", from:oh-my-zsh
+zplug "lib/async_prompt", from:oh-my-zsh
+zplug "so-fancy/diff-so-fancy"
+
+zplug "zsh-users/zsh-autosuggestions", defer:2
+zplug "joshskidmore/zsh-fzf-history-search", defer:2
+zplug "zsh-users/zsh-syntax-highlighting", defer:2
+zplug "themes/maran", from:oh-my-zsh, as:theme
+
+zstyle ':completion:*:default' menu select
+zstyle ':completion:*:default' list-colors \
+  "di=1;36" "ln=35" "so=32" "pi=33" "ex=31" "bd=34;46" "cd=34;43" \
+  "su=30;41" "sg=30;46" "tw=30;42" "ow=30;43"
+export WORDCHARS=${WORDCHARS/\/}
+
+
+# zplug check returns true if all packages are installed
+# Therefore, when it returns false, run zplug install
+if ! zplug check; then
+    zplug install
+fi
+
+# source plugins and add commands to the PATH
+zplug load
+
+bindkey '^[[Z' autosuggest-accept
+
+eval $(thefuck --alias)
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

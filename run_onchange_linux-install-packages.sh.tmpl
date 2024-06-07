@@ -1,0 +1,26 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+
+{{ range .packages.linux.apt -}}
+sudo apt install {{ . | quote }} -y
+{{ end -}}
+
+package=deb-get
+PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $package|grep "install ok installed")
+echo Checking for $package: $PKG_OK
+if [ "" = "$PKG_OK" ]; then
+  echo "No $package. Setting up $package."
+  curl -sL https://raw.githubusercontent.com/wimpysworld/deb-get/main/deb-get | sudo -E bash -s install $package
+fi
+
+{{ range .packages.linux.debget -}}
+sudo deb-get install {{ . | quote }}
+{{ end -}}
+
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+sudo chsh -s $(which zsh)
+
+
+{{ end -}}
