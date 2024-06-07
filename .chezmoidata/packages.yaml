@@ -1,0 +1,10 @@
+packages:
+  linux:
+    apt:
+      - 'fzf'
+      - 'zsh'
+      - 'zplug'
+      - 'thefuck'
+      - 'htop'
+    debget:
+      - 'du-dust'
